@@ -86,6 +86,62 @@ const deleteChar = () => {
   }
 };
 
+const handleNumber = (e) => {
+  if (answer) {
+    clear();
+  }
+
+  if (currentOperand == 1) {
+    firstOperand += e.target.textContent;
+  } else {
+    secondOperand += e.target.textContent;
+  }
+
+  updateUI();
+};
+
+const handleOperator = (e) => {
+  currentOperand = 2;
+  operator = e.target.textContent;
+  secondOperand = "";
+  answer = null;
+
+  updateUI();
+};
+
+const handleDot = (e) => {
+  if (currentOperand == 1) {
+    if (firstOperand.includes(".")) {
+      return;
+    }
+
+    firstOperand === ""
+      ? (firstOperand = "0.")
+      : (firstOperand += e.target.textContent);
+  } else {
+    if (secondOperand.includes(".")) {
+      return;
+    }
+    secondOperand === ""
+      ? (secondOperand = "0.")
+      : (secondOperand += e.target.textContent);
+  }
+
+  updateUI();
+};
+
+const handleCalculate = (e) => {
+  if (!firstOperand || !secondOperand || !operator) {
+    return;
+  }
+
+  answer = operate(operator, +firstOperand, +secondOperand);
+
+  updateUI();
+  firstOperand = answer;
+  secondOperand = "";
+};
+
 buttons.forEach((i) => {
   const button = document.createElement("div");
   button.textContent = i.value;
@@ -94,60 +150,17 @@ buttons.forEach((i) => {
 
   switch (i.type) {
     case "number":
-      button.addEventListener("click", (e) => {
-        if (answer) {
-          clear();
-        }
+      button.addEventListener("click", handleNumber);
 
-        if (currentOperand == 1) {
-          firstOperand += e.target.textContent;
-        } else {
-          secondOperand += e.target.textContent;
-        }
-
-        updateUI();
-      });
       break;
     case "calculate":
-      button.addEventListener("click", (e) => {
-        answer = operate(operator, +firstOperand, +secondOperand);
-
-        updateUI();
-        firstOperand = answer;
-        secondOperand = "";
-      });
+      button.addEventListener("click", handleCalculate);
       break;
     case "operator":
-      button.addEventListener("click", (e) => {
-        currentOperand = 2;
-        operator = e.target.textContent;
-        secondOperand = "";
-        answer = null;
-
-        updateUI();
-      });
+      button.addEventListener("click", handleOperator);
       break;
     case "dot":
-      button.addEventListener("click", (e) => {
-        if (currentOperand == 1) {
-          if (firstOperand.includes(".")) {
-            return;
-          }
-
-          firstOperand === ""
-            ? (firstOperand = "0.")
-            : (firstOperand += e.target.textContent);
-        } else {
-          if (secondOperand.includes(".")) {
-            return;
-          }
-          secondOperand === ""
-            ? (secondOperand = "0.")
-            : (secondOperand += e.target.textContent);
-        }
-
-        updateUI();
-      });
+      button.addEventListener("click", handleDot);
       break;
 
     default:
