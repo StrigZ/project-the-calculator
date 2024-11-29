@@ -9,6 +9,7 @@ let secondOperand = "";
 let operator = null;
 let currentOperand = 1;
 let answer = null;
+let expression = "";
 
 const buttons = [
   { type: "number", value: 1, order: 1 },
@@ -38,6 +39,12 @@ const operate = (operator, a, b) => {
     case "×":
       return a * b;
     case "÷":
+      if (b === 0) {
+        setTimeout(() => {
+          clear();
+        }, 500);
+        return "I WILL FIND YOU";
+      }
       return a / b;
     default:
       break;
@@ -54,11 +61,7 @@ const updateUI = () => {
         : secondOperand;
   }
 
-  displayTopEle.textContent = `
-  ${currentOperand === 2 ? firstOperand : ""} 
-  ${operator ? operator : ""}
-  ${answer ? secondOperand : ""}
-  `;
+  displayTopEle.textContent = expression;
 };
 
 const clear = () => {
@@ -67,6 +70,7 @@ const clear = () => {
   currentOperand = 1;
   operator = null;
   answer = null;
+  expression = "";
 
   displayTopEle.textContent = "";
   displayBottomEle.textContent = "";
@@ -96,16 +100,29 @@ const handleNumber = (e) => {
   } else {
     secondOperand += e.target.textContent;
   }
-
   updateUI();
 };
 
 const handleOperator = (e) => {
-  currentOperand = 2;
-  operator = e.target.textContent;
-  secondOperand = "";
-  answer = null;
+  if (!firstOperand) {
+    operator = e.target.textContent;
+    firstOperand = "0";
 
+    expression = `${firstOperand} ${operator} `;
+  } else if (firstOperand && secondOperand) {
+    answer = operate(operator, +firstOperand, +secondOperand);
+    operator = e.target.textContent;
+
+    firstOperand = answer;
+    expression += `${secondOperand} ${operator} `;
+    secondOperand = "";
+    answer = null;
+  } else if (firstOperand) {
+    operator = e.target.textContent;
+    expression = `${firstOperand} ${operator} `;
+  }
+
+  currentOperand = 2;
   updateUI();
 };
 
@@ -130,16 +147,19 @@ const handleDot = (e) => {
   updateUI();
 };
 
-const handleCalculate = (e) => {
+const handleCalculate = () => {
   if (!firstOperand || !secondOperand || !operator) {
     return;
   }
 
   answer = operate(operator, +firstOperand, +secondOperand);
+  expression = "";
 
   updateUI();
   firstOperand = answer;
   secondOperand = "";
+  answer = null;
+  currentOperand = 1;
 };
 
 buttons.forEach((i) => {
