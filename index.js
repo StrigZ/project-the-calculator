@@ -31,24 +31,30 @@ const buttons = [
 ];
 
 const operate = (operator, a, b) => {
+  let answer = null;
   switch (operator) {
     case "+":
-      return a + b;
+      answer = a + b;
+      break;
     case "-":
-      return a - b;
+      answer = a - b;
+      break;
     case "×":
-      return a * b;
+      answer = a * b;
+      break;
     case "÷":
       if (b === 0) {
         setTimeout(() => {
           clear();
         }, 500);
-        return "I WILL FIND YOU";
       }
-      return a / b;
+      answer = a / b;
+      break;
     default:
       break;
   }
+
+  return +answer.toFixed(10);
 };
 
 const updateUI = () => {
